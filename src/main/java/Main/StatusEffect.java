@@ -46,7 +46,7 @@ public class StatusEffect {
         return eff;
     }
 
-    public static StatusEffect earthWall(int hp) {
+    public static StatusEffect earthwall(int hp) {
         StatusEffect eff = new StatusEffect("Earth Wall", 99, "EarthWall"); // long duration
         eff.wallHp = hp;
         return eff;
@@ -57,6 +57,12 @@ public class StatusEffect {
         eff.defenseBonus = 30;
         return eff;
     }
+    public static StatusEffect darkImbue() {
+    // Creates a 2-turn buff tagged as "DarkImbue"
+    StatusEffect eff = new StatusEffect("Dark Imbue", 2, "DarkImbue");
+    eff.bonusDamage = 22; // A massive flat damage spike!
+    return eff;
+}
 
     // Getters
     public String getName() { return name; }

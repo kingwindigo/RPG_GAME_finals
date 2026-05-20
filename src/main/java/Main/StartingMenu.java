@@ -26,9 +26,16 @@ public class StartingMenu extends javax.swing.JFrame {
     private int p3ReadyAttack = 0;
     
     private String p1SelectedSkillName = ""; 
+    private String p2SelectedSkillName = ""; 
+    private String p3SelectedSkillName = ""; 
 // Stores the index of the enemy targeted (e.g., 1, 2, or 3)
     private int p1SelectedTargetIndex = -1;
-    
+    private int p2SelectedTargetIndex = -1;
+    private int p3SelectedTargetIndex = -1;
+    private String[] enemyAssignedSkins = {"", "", ""};
+
+
+
     
     
     private static final int ARENAICON_WIDTH = 170;
@@ -49,6 +56,8 @@ public class StartingMenu extends javax.swing.JFrame {
     private Image[] settingsLayers = new Image[9];
     private Image newArenaBackground;
     
+    //KILLERMOVE
+    private int killerMoveCount = 0;
     
 
     /**
@@ -104,11 +113,11 @@ public class StartingMenu extends javax.swing.JFrame {
         });
         
         initComponents();
-        
         // 4. Set panels up for the home menu view initially
         MenuPanel.setVisible(true);
         SettingsPanel.setVisible(false);
         ArenaPanel.setVisible(false);
+
         
         // 5. CRUCIAL: Make the panels clear like glass. This lets the main frame's
         // custom fullscreen graphics paint loop show through underneath your buttons!
@@ -116,7 +125,7 @@ public class StartingMenu extends javax.swing.JFrame {
         SettingsPanel.setOpaque(false);
         ArenaPanel.setOpaque(false);
         
-                player1Target1.setVisible(false);
+        player1Target1.setVisible(false);
         player1Target2.setVisible(false);
         player1Target3.setVisible(false);
         
@@ -128,6 +137,7 @@ public class StartingMenu extends javax.swing.JFrame {
         player3Target2.setVisible(false);
         player3Target3.setVisible(false);
         
+
     }
     
     
@@ -219,9 +229,11 @@ private void selectPath(String pathName) {
         p1Base = new javax.swing.JLabel();
         p2Base = new javax.swing.JLabel();
         p3Base = new javax.swing.JLabel();
-        e2Base = new javax.swing.JLabel();
-        e1Base = new javax.swing.JLabel();
         e3Base = new javax.swing.JLabel();
+        e1Base = new javax.swing.JLabel();
+        e2Base = new javax.swing.JLabel();
+        ProjectilePath = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         player1Target3 = new javax.swing.JButton();
         player3Icon = new javax.swing.JLabel();
         player1Icon = new javax.swing.JLabel();
@@ -241,8 +253,13 @@ private void selectPath(String pathName) {
         player3Skill1 = new javax.swing.JButton();
         AttackButton = new javax.swing.JButton();
         player3Skill2 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        ProjectilePath = new javax.swing.JLabel();
+        e3HpBar = new javax.swing.JProgressBar();
+        p1HpBar = new javax.swing.JProgressBar();
+        p2HpBar = new javax.swing.JProgressBar();
+        p3HpBar = new javax.swing.JProgressBar();
+        e1HpBar = new javax.swing.JProgressBar();
+        e2HpBar = new javax.swing.JProgressBar();
+        gameStateLabel = new javax.swing.JLabel();
 
         jButton1.setText("jButton1");
 
@@ -366,14 +383,21 @@ private void selectPath(String pathName) {
         p3Base.setText("p3");
         ArenaPanel.add(p3Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 680, -1, -1));
 
-        e2Base.setText("e2");
-        ArenaPanel.add(e2Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1670, 720, -1, -1));
+        e3Base.setText("e3");
+        ArenaPanel.add(e3Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1710, 750, -1, -1));
 
         e1Base.setText("e1");
-        ArenaPanel.add(e1Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1460, 780, -1, -1));
+        ArenaPanel.add(e1Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1360, 770, -1, -1));
 
-        e3Base.setText("e3");
-        ArenaPanel.add(e3Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1800, 760, -1, -1));
+        e2Base.setText("e2");
+        ArenaPanel.add(e2Base, new org.netbeans.lib.awtextra.AbsoluteConstraints(1580, 710, -1, -1));
+
+        ProjectilePath.setText("ProjectilePath");
+        ArenaPanel.add(ProjectilePath, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 850, -1, -1));
+
+        jPanel1.setBackground(new java.awt.Color(76, 76, 76));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        ArenaPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 820, 2080, 200));
 
         player1Target3.setText("target3");
         player1Target3.addActionListener(this::player1Target3ActionPerformed);
@@ -449,13 +473,32 @@ private void selectPath(String pathName) {
         player3Skill2.addActionListener(this::player3Skill2ActionPerformed);
         ArenaPanel.add(player3Skill2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 450, 90, 30));
 
-        jPanel1.setBackground(new java.awt.Color(76, 76, 76));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        e3HpBar.setBackground(new java.awt.Color(255, 0, 0));
+        e3HpBar.setStringPainted(true);
+        ArenaPanel.add(e3HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1750, 740, -1, 20));
 
-        ProjectilePath.setText("ProjectilePath");
-        jPanel1.add(ProjectilePath, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 0, -1, -1));
+        p1HpBar.setBackground(new java.awt.Color(0, 209, 0));
+        p1HpBar.setStringPainted(true);
+        ArenaPanel.add(p1HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 720, -1, 20));
 
-        ArenaPanel.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 820, 2080, 200));
+        p2HpBar.setBackground(new java.awt.Color(0, 209, 0));
+        p2HpBar.setStringPainted(true);
+        ArenaPanel.add(p2HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 790, -1, 20));
+
+        p3HpBar.setBackground(new java.awt.Color(0, 209, 0));
+        p3HpBar.setStringPainted(true);
+        ArenaPanel.add(p3HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 660, -1, 20));
+
+        e1HpBar.setBackground(new java.awt.Color(255, 0, 0));
+        e1HpBar.setStringPainted(true);
+        ArenaPanel.add(e1HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1370, 750, -1, 20));
+
+        e2HpBar.setBackground(new java.awt.Color(255, 0, 0));
+        e2HpBar.setStringPainted(true);
+        ArenaPanel.add(e2HpBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1590, 690, -1, 20));
+
+        gameStateLabel.setFont(new java.awt.Font("Segoe UI Emoji", 1, 70)); // NOI18N
+        ArenaPanel.add(gameStateLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 150, 1320, 120));
 
         getContentPane().add(ArenaPanel, new java.awt.GridBagConstraints());
 
@@ -549,9 +592,9 @@ private void selectPath(String pathName) {
             updateCombatSprite(p3Base, "3rdChar", "");
 
             // Set up monster labels
-            updateCombatSprite(e1Base, "e1", "Idle");
-            updateCombatSprite(e2Base, "e2", "Idle");
-            updateCombatSprite(e3Base, "e3", "Idle");
+            updateCombatSprite(e1Base, "e1", "");
+            updateCombatSprite(e2Base, "e2", "");
+            updateCombatSprite(e3Base, "e3", "");
             
             // 6. Flip panels to the combat arena view
             currentScreen = "ARENA";
@@ -569,10 +612,12 @@ private void selectPath(String pathName) {
     }//GEN-LAST:event_jButton10ActionPerformed
 
     private void player1Skill1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player1Skill1ActionPerformed
-
+        
     Character p1Character = battleMgr.getPlayerInSlot(0); 
         if (p1Character == null) return;
+ 
 
+        
         // 1. Get the actual skill object from your subclass polymorphic list
         // (Assuming Skill 1 corresponds to index 0 in your subclass list)
         java.util.List<GuItem> availableSkills = p1Character.getAvailableSkills();
@@ -581,6 +626,7 @@ private void selectPath(String pathName) {
 
             // 2. Temporarily record the chosen skill name
             p1SelectedSkillName = chosenSkill.getName();
+            player1Skill1.setText(chosenSkill.getName());
             System.out.println("Recorded Selection: Player 1 prepares " + p1SelectedSkillName);
         }
 
@@ -595,19 +641,74 @@ private void selectPath(String pathName) {
     }//GEN-LAST:event_player1Skill1ActionPerformed
 
     private void player2Skill1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2Skill1ActionPerformed
-        // TODO add your handling code here:
+    Character p2Character = battleMgr.getPlayerInSlot(1); 
+        if (p2Character == null) return;
+
+        java.util.List<GuItem> availableSkills = p2Character.getAvailableSkills();
+        if (availableSkills != null && !availableSkills.isEmpty()) {
+            GuItem chosenSkill = availableSkills.get(0);
+
+            // 2. Temporarily record the chosen skill name
+            p2SelectedSkillName = chosenSkill.getName();
+            player2Skill1.setText(chosenSkill.getName());
+            System.out.println("Recorded Selection: Player 1 prepares " + p2SelectedSkillName);
+        }
+
+        // 3. Reveal the target selection options to the user
+        if (p2ReadyAttack < 2) {
+            player2Target1.setVisible(true);
+            player2Target2.setVisible(true);
+            player2Target3.setVisible(true);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_player2Skill1ActionPerformed
 
     private void player3Skill1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player3Skill1ActionPerformed
-        // TODO add your handling code here:
+    Character p3Character = battleMgr.getPlayerInSlot(2); 
+        if (p3Character == null) return;
+
+        java.util.List<GuItem> availableSkills = p3Character.getAvailableSkills();
+        if (availableSkills != null && !availableSkills.isEmpty()) {
+            GuItem chosenSkill = availableSkills.get(0);
+
+            // 2. Temporarily record the chosen skill name
+            p3SelectedSkillName = chosenSkill.getName();
+            player3Skill1.setText(chosenSkill.getName());
+            System.out.println("Recorded Selection: Player 1 prepares " + p3SelectedSkillName);
+        }
+
+        // 3. Reveal the target selection options to the user
+        if (p3ReadyAttack < 2) {
+            player3Target1.setVisible(true);
+            player3Target2.setVisible(true);
+            player3Target3.setVisible(true);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_player3Skill1ActionPerformed
 
     private void player1Skill2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player1Skill2ActionPerformed
-    if(p1ReadyAttack < 2){
-                 player1Target1.setVisible(true);
-                 player1Target2.setVisible(true);
-                 player1Target3.setVisible(true);
-    }
+    Character p1Character = battleMgr.getPlayerInSlot(0); 
+        if (p1Character == null) return;
+
+        player1Skill2.setBackground(Color.BLACK);
+        player1Skill2.setForeground(Color.WHITE);
+
+        
+        java.util.List<GuItem> availableSkills = p1Character.getAvailableSkills();
+        if (availableSkills != null && !availableSkills.isEmpty()) {
+
+            GuItem chosenSkill = availableSkills.get(1);
+            
+
+
+            p1SelectedSkillName = chosenSkill.getName();
+            player1Skill2.setText(chosenSkill.getName());
+            System.out.println("Recorded Selection: Player 1 prepares " + p1SelectedSkillName);
+        }
+
+        if (p1ReadyAttack < 2) {
+            player1Target1.setVisible(true);
+            player1Target2.setVisible(true);
+            player1Target3.setVisible(true);
+        }
 
         
         
@@ -615,10 +716,11 @@ private void selectPath(String pathName) {
     }//GEN-LAST:event_player1Skill2ActionPerformed
 
     private void player1Target1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player1Target1ActionPerformed
-    if (p1ReadyAttack < 2) {
+    if (p1ReadyAttack < 1) {
+        killerMoveCount++;
             p1ReadyAttack++;
             System.out.println("Ready Attack count: " + p1ReadyAttack);
-
+            p1SelectedTargetIndex = 1; 
             player1Target1.setBackground(Color.GRAY);
             player1Target1.setForeground(Color.WHITE);
 
@@ -626,8 +728,8 @@ private void selectPath(String pathName) {
             player1Target2.setVisible(false);
             player1Target3.setVisible(false);
         }
-        else if (p1ReadyAttack == 2) {
-            // === CRUCIAL FIX: Record that Enemy Slot 1 was locked in! ===
+        else if (p1ReadyAttack == 1) {
+            killerMoveCount++;
             p1SelectedTargetIndex = 1; 
 
             player1Target1.setBackground(Color.BLACK);
@@ -643,172 +745,543 @@ private void selectPath(String pathName) {
     }//GEN-LAST:event_player1Target1ActionPerformed
 
     private void player1Target2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player1Target2ActionPerformed
-        if(p1ReadyAttack < 1){
+    if (p1ReadyAttack < 1) {
+        killerMoveCount++;
+        p1SelectedTargetIndex = 2; 
             p1ReadyAttack++;
-            System.out.println(p1ReadyAttack);
-                player1Target2.setBackground(Color.GRAY);
+            System.out.println("Ready Attack count: " + p1ReadyAttack);
 
-                player1Target2.setForeground(Color.WHITE);
-                player1Target1.setVisible(false);
-                player1Target2.setVisible(true);
-                player1Target3.setVisible(false);
+            player1Target2.setBackground(Color.GRAY);
+            player1Target2.setForeground(Color.WHITE);
+
+            player1Target1.setVisible(false);
+            player1Target2.setVisible(true);
+            player1Target3.setVisible(false);
         }
-        else if(p1ReadyAttack == 1){
-                player1Target2.setBackground(Color.BLACK);
-                player1Target2.setForeground(Color.WHITE);
+        else if (p1ReadyAttack == 1) {
+            killerMoveCount++;
+            p1SelectedTargetIndex = 2; 
 
-                // Explicitly isolate this choice visually:
-                player1Target1.setVisible(true);
-                player1Target2.setVisible(true);
-                player1Target3.setVisible(true);
+            player1Target2.setBackground(Color.BLACK);
+            player1Target2.setForeground(Color.WHITE);
 
-                // Force the main frame window to draw your conditional overlay picture right away
-                this.repaint();
+            player1Target1.setVisible(false);
+            player1Target2.setVisible(true);
+            player1Target3.setVisible(false);
+
+            this.repaint(); 
         }
     }//GEN-LAST:event_player1Target2ActionPerformed
 
     private void player1Target3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player1Target3ActionPerformed
-        if(p1ReadyAttack < 1){
+    if (p1ReadyAttack < 1) {
+        killerMoveCount++;
+        p1SelectedTargetIndex = 3; 
             p1ReadyAttack++;
-            System.out.println(p1ReadyAttack);
-                player1Target3.setBackground(Color.GRAY);
+            System.out.println("Ready Attack count: " + p1ReadyAttack);
 
-                player1Target3.setForeground(Color.WHITE);
-                player1Target1.setVisible(false);
-                player1Target2.setVisible(false);
-                player1Target3.setVisible(true);
+            player1Target3.setBackground(Color.GRAY);
+            player1Target3.setForeground(Color.WHITE);
+
+            player1Target1.setVisible(false);
+            player1Target2.setVisible(false);
+            player1Target3.setVisible(true);
         }
-        else if(p1ReadyAttack == 1){
-                player1Target3.setBackground(Color.BLACK);
-                player1Target3.setForeground(Color.WHITE);
-                player1Target1.setVisible(true);
-                player1Target2.setVisible(true);
-                player1Target3.setVisible(true);
+        else if (p1ReadyAttack == 1) {
+            killerMoveCount++;
+            p1SelectedTargetIndex = 3; 
 
-                this.repaint();
+            player1Target3.setBackground(Color.BLACK);
+            player1Target3.setForeground(Color.WHITE);
+
+            player1Target1.setVisible(false);
+            player1Target2.setVisible(false);
+            player1Target3.setVisible(true);
+
+            this.repaint(); 
         }
     }//GEN-LAST:event_player1Target3ActionPerformed
 
     private void player2Target1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2Target1ActionPerformed
-        // TODO add your handling code here:
+    if (p2ReadyAttack < 1) {
+        killerMoveCount++;
+        p2SelectedTargetIndex = 1; 
+            p2ReadyAttack++;
+            System.out.println("Ready Attack count: " + p2ReadyAttack);
+
+            player2Target1.setBackground(Color.GRAY);
+            player2Target1.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(true);
+            player2Target2.setVisible(false);
+            player2Target3.setVisible(false);
+        }
+    else if (p2ReadyAttack == 1) {
+            killerMoveCount++;
+            p2SelectedTargetIndex = 1; 
+
+            player2Target1.setBackground(Color.BLACK);
+            player2Target1.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(true);
+            player2Target2.setVisible(false);
+            player2Target3.setVisible(false);
+
+            this.repaint(); 
+        }
     }//GEN-LAST:event_player2Target1ActionPerformed
 
     private void player2Skill2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2Skill2ActionPerformed
-        // TODO add your handling code here:
+    Character p2Character = battleMgr.getPlayerInSlot(1); 
+        if (p2Character == null) return;
+
+        java.util.List<GuItem> availableSkills = p2Character.getAvailableSkills();
+        if (availableSkills != null && !availableSkills.isEmpty()) {
+            GuItem chosenSkill = availableSkills.get(1);
+
+            // 2. Temporarily record the chosen skill name
+            p2SelectedSkillName = chosenSkill.getName();
+            player2Skill2.setText(chosenSkill.getName());
+            System.out.println("Recorded Selection: Player 1 prepares " + p2SelectedSkillName);
+        }
+
+        // 3. Reveal the target selection options to the user
+        if (p2ReadyAttack < 2) {
+            player2Target1.setVisible(true);
+            player2Target2.setVisible(true);
+            player2Target3.setVisible(true);
+        }         // TODO add your handling code here:
     }//GEN-LAST:event_player2Skill2ActionPerformed
 
     private void player3Skill2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player3Skill2ActionPerformed
-        // TODO add your handling code here:
+    Character p3Character = battleMgr.getPlayerInSlot(2); 
+        if (p3Character == null) return;
+
+
+        java.util.List<GuItem> availableSkills = p3Character.getAvailableSkills();
+        if (availableSkills != null && !availableSkills.isEmpty()) {
+            GuItem chosenSkill = availableSkills.get(1);
+
+            // 2. Temporarily record the chosen skill name
+            p3SelectedSkillName = chosenSkill.getName();
+            player3Skill2.setText(chosenSkill.getName());
+            System.out.println("Recorded Selection: Player 1 prepares " + p3SelectedSkillName);
+        }
+
+        // 3. Reveal the target selection options to the user
+        if (p3ReadyAttack < 2) {
+            player3Target1.setVisible(true);
+            player3Target2.setVisible(true);
+            player3Target3.setVisible(true);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_player3Skill2ActionPerformed
 
     private void player2Target2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2Target2ActionPerformed
-        // TODO add your handling code here:
+    if (p2ReadyAttack < 1) {
+        killerMoveCount++;
+        p2SelectedTargetIndex = 2; 
+            p2ReadyAttack++;
+            System.out.println("Ready Attack count: " + p2ReadyAttack);
+
+            player2Target2.setBackground(Color.GRAY);
+            player2Target2.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(false);
+            player2Target2.setVisible(true);
+            player2Target3.setVisible(false);
+        }
+    else if (p2ReadyAttack == 1) {
+            killerMoveCount++;
+            p2SelectedTargetIndex = 2; 
+
+            player2Target2.setBackground(Color.BLACK);
+            player2Target2.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(false);
+            player2Target2.setVisible(true);
+            player2Target3.setVisible(false);
+
+            this.repaint(); 
+        }
     }//GEN-LAST:event_player2Target2ActionPerformed
 
     private void player2Target3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player2Target3ActionPerformed
-        // TODO add your handling code here:
+    if (p2ReadyAttack < 1) {
+        killerMoveCount++;
+        p2SelectedTargetIndex = 3; 
+            p2ReadyAttack++;
+            System.out.println("Ready Attack count: " + p2ReadyAttack);
+
+            player2Target3.setBackground(Color.GRAY);
+            player2Target3.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(false);
+            player2Target2.setVisible(false);
+            player2Target3.setVisible(true);
+        }
+    else if (p2ReadyAttack == 1) {
+            killerMoveCount++;
+            p2SelectedTargetIndex = 3; 
+
+            player2Target3.setBackground(Color.BLACK);
+            player2Target3.setForeground(Color.WHITE);
+
+            player2Target1.setVisible(false);
+            player2Target2.setVisible(false);
+            player2Target3.setVisible(true);
+
+            this.repaint(); 
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_player2Target3ActionPerformed
 
     private void player3Target1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player3Target1ActionPerformed
-        // TODO add your handling code here:
+    if (p3ReadyAttack < 1) {
+        killerMoveCount++;
+        p3SelectedTargetIndex = 1; 
+            p3ReadyAttack++;
+            System.out.println("Ready Attack count: " + p3ReadyAttack);
+
+            player3Target1.setBackground(Color.GRAY);
+            player3Target1.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(true);
+            player3Target2.setVisible(false);
+            player3Target3.setVisible(false);
+        }
+    else if (p3ReadyAttack == 1) {
+            killerMoveCount++;
+            p3SelectedTargetIndex = 1; 
+
+            player3Target1.setBackground(Color.BLACK);
+            player3Target1.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(true);
+            player3Target2.setVisible(false);
+            player3Target3.setVisible(false);
+
+            this.repaint(); 
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_player3Target1ActionPerformed
 
     private void player3Target2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player3Target2ActionPerformed
-        // TODO add your handling code here:
+    if (p3ReadyAttack < 1) {
+        killerMoveCount++;
+        p3SelectedTargetIndex = 2; 
+            p3ReadyAttack++;
+            System.out.println("Ready Attack count: " + p3ReadyAttack);
+
+            player3Target2.setBackground(Color.GRAY);
+            player3Target2.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(false);
+            player3Target2.setVisible(true);
+            player3Target3.setVisible(false);
+        }
+    else if (p3ReadyAttack == 1) {
+            killerMoveCount++;
+            p3SelectedTargetIndex = 2; 
+
+            player3Target2.setBackground(Color.BLACK);
+            player3Target2.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(false);
+            player3Target2.setVisible(true);
+            player3Target3.setVisible(false);
+
+            this.repaint(); 
+        }         // TODO add your handling code here:
     }//GEN-LAST:event_player3Target2ActionPerformed
 
     private void player3Target3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_player3Target3ActionPerformed
-        // TODO add your handling code here:
+    if (p3ReadyAttack < 1) {
+        killerMoveCount++;
+        p3SelectedTargetIndex = 3; 
+            p3ReadyAttack++;
+            System.out.println("Ready Attack count: " + p3ReadyAttack);
+
+            player3Target3.setBackground(Color.GRAY);
+            player3Target3.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(false);
+            player3Target2.setVisible(false);
+            player3Target3.setVisible(true);
+        }
+    else if (p3ReadyAttack == 1) {
+            killerMoveCount++;
+            p3SelectedTargetIndex = 3; 
+
+            player3Target3.setBackground(Color.BLACK);
+            player3Target3.setForeground(Color.WHITE);
+
+            player3Target1.setVisible(false);
+            player3Target2.setVisible(false);
+            player3Target3.setVisible(true);
+
+            this.repaint(); 
+        }         // TODO add your handling code here:
     }//GEN-LAST:event_player3Target3ActionPerformed
 
     private void AttackButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AttackButtonActionPerformed
-// 1. Validation check
-    if (p1SelectedSkillName.isEmpty() || p1SelectedTargetIndex == -1) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Please select both a skill and a target first!");
-        return;
+// 1. Validation check arrays
+JButton[][] playerTarget = {
+    {player1Target1, player1Target2, player1Target3},
+    {player2Target1, player2Target2, player2Target3},
+    {player3Target1, player3Target2, player3Target3}
+};
+
+JButton[][] playerSkill = {
+    {player1Skill1, player1Skill2},
+    {player2Skill1, player2Skill2},
+    {player3Skill1, player3Skill2},
+};
+
+String[] selectedSkillName = {
+    p1SelectedSkillName,
+    p2SelectedSkillName,
+    p3SelectedSkillName
+};
+
+int[] selectedTargetIndex = {
+    p1SelectedTargetIndex,
+    p2SelectedTargetIndex,
+    p3SelectedTargetIndex
+};
+
+JLabel[] playerBases = {
+    p1Base,
+    p2Base,
+    p3Base
+};
+
+String[] animNames = {
+    "1stChar",
+    "2ndChar",
+    "3rdChar"
+};
+
+
+
+System.out.println("--- PLAYER TURN PROCESSING START ---");
+
+boolean actionExecuted = false;
+
+for (Character player : battleMgr.getLivingPlayers()) {
+    player.processEndOfTurnEffects(); // Processes shields & wood/water buffs
+}
+
+battleMgr.processGlobalEffects();
+refreshAllBattleUi();
+// === STEP 1: CALCULATE BACKEND DAMAGE & TRIGGERS FOR LIVING PLAYERS ===
+for (int p = 0; p < 3; p++) {
+    if (selectedSkillName[p].isEmpty()) {
+        continue;
     }
 
-    // 2. Fetch actors from your BattleManager backend
-    Character attacker = battleMgr.getPlayerInSlot(0);
-    Character targetEnemy = battleMgr.getEnemyInSlot(p1SelectedTargetIndex - 1); 
+    Character attacker = battleMgr.getPlayerInSlot(p);
+    
+    // GUARD: Skip dead characters entirely
+    if (attacker == null || attacker.getHp() <= 0) {
+        System.out.println(animNames[p] + " is dead! Skipping action execution.");
+        continue; 
+    }
 
-    if (attacker != null && targetEnemy != null) {
-        GuItem skillToUse = null;
-        for (GuItem gu : attacker.getAvailableSkills()) {
-            if (gu.getName().equalsIgnoreCase(p1SelectedSkillName)) {
-                skillToUse = gu;
-                break;
+    // Find the physical GuItem object to inspect its Effect Type metadata
+    GuItem skillToUse = null;
+    for (GuItem gu : attacker.getAvailableSkills()) {
+        if (gu.getName().equalsIgnoreCase(selectedSkillName[p])) {
+            skillToUse = gu;
+            break;
+        }
+    }
+
+    if (skillToUse != null) {
+        Character targetCharacter = null;
+        String type = skillToUse.getEffectType().toLowerCase();
+        int targetSlotIndex = selectedTargetIndex[p] - 1;
+
+        // DATA-DRIVEN TARGET ROUTING
+        if (type.equals("buff") || type.equals("heal") || type.equals("shield")) {
+            // Supportive spells dynamically map back onto the caster
+            targetCharacter = battleMgr.getPlayerInSlot(targetSlotIndex);
+        } else {
+            // Offensive spells require an enemy index array coordinate mapping
+            if (selectedTargetIndex[p] != -1) {
+                targetCharacter = battleMgr.getEnemyInSlot(selectedTargetIndex[p] - 1);
             }
         }
 
-        if (skillToUse != null) {
-            System.out.println("--- EXECUTION PHASE START ---");
-
-            // 3. Shift attacker to casting pose frame
-            updateCombatSprite(p1Base, "1stChar", "2");
-
-            // 4. Run calculations on backend logic
-            attacker.useSkill(skillToUse, targetEnemy, battleMgr);
-
-            // === 5. CALL THE SEPARATED ANIMATION CLASS METHOD ===
-            // This plays the animation on ProjectilePath for 3000ms (3 seconds)
-            System.out.println("Triggering clean animation for skill: " + p1SelectedSkillName);
-            playSkillAnimation(ProjectilePath, p1SelectedSkillName, 3000);
-
-            // 6. Reset character states after the execution phase finishes (3 seconds)
-            javax.swing.Timer sequenceTimer = new javax.swing.Timer(3000, e -> {
-                updateCombatSprite(p1Base, "1stChar", ""); // Reset pose to normal idle
-
-                // Reset selection trackers safely inside the loop timeline
-                p1SelectedSkillName = "";
-                p1SelectedTargetIndex = -1;
-                p1ReadyAttack = 0; 
-
-                // Hide targeting overlays
-                player1Target1.setVisible(false);
-                player1Target2.setVisible(false);
-                player1Target3.setVisible(false);
-
-                if (getContentPane() != null) {
-                    getContentPane().repaint();
-                }
-            });
+        // EXECUTE BACKEND MECHANICS IF TARGET VALIDATED
+        if (targetCharacter != null) {
+            actionExecuted = true;
             
-            sequenceTimer.setRepeats(false);
-            sequenceTimer.start();
+            // Set attacking frame posture
+            updateCombatSprite(playerBases[p], animNames[p], "2");
+
+            // Process backend calculations (damage, mastery points, or buff states)
+            attacker.useSkill(skillToUse, targetCharacter, battleMgr);
+            
+            System.out.println(attacker.getName() + " successfully casted " + skillToUse.getName());
+
+            // Run your animation layer project channel (Unflipped player direction)
+            playSkillAnimation(ProjectilePath, selectedSkillName[p], 3000);
         }
     }
+}
+for (Character player : battleMgr.getLivingPlayers()) {
+            if (player instanceof WildPath) {
+                ((WildPath) player).resetGuUses(); 
+            }
+        }
+
+// === STEP 2: RUN SINGLE TIMELINE CLEANUP & ENEMY RETALIATION ===
+if (actionExecuted) {
+    // Single master timeline tracker loop (Only runs ONCE per team phase click)
+    javax.swing.Timer sequenceTimer = new javax.swing.Timer(3000, e -> {
+        
+        // Return living players to idle postures safely
+        for (int p = 0; p < 3; p++) {
+            Character player = battleMgr.getPlayerInSlot(p);
+            if (player != null && player.getHp() > 0) {
+                updateCombatSprite(playerBases[p], animNames[p], "");
+            }
+        }
+
+        // Wipe input variables clean for the next turn
+        p1SelectedSkillName = ""; p2SelectedSkillName = ""; p3SelectedSkillName = "";
+        p1SelectedTargetIndex = -1; p2SelectedTargetIndex = -1; p3SelectedTargetIndex = -1;
+        p1ReadyAttack = 0; p2ReadyAttack = 0; p3ReadyAttack = 0;
+
+        // Hide target choice buttons
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                playerTarget[i][j].setVisible(false);
+            }
+        }
+
+        // === STEP 3: ENEMY RETALIATION PHASE (NO EXTRA TIMER) ===
+        System.out.println("--- ENEMY TURN START ---");
+        
+        // Loop through all 3 enemy slots instantly
+        for (int i = 0; i < 3; i++) {
+            Character activeEnemy = battleMgr.getEnemyInSlot(i);
+
+            // GUARD: Only allow living enemies to strike
+            if (activeEnemy != null && activeEnemy.getHp() > 0) {
+                String skillUsed = battleMgr.executeEnemyAiTurn(activeEnemy);
+
+                if (!skillUsed.equals("") && !skillUsed.equals("basic")) {
+                    System.out.println(activeEnemy.getName() + " triggering visual: " + skillUsed);
+                    // Pass true so the projectile plays horizontally flipped!
+                    playSkillAnimation(ProjectilePath, skillUsed, 2000);
+                }
+            }
+        }
+
+        // Final evaluation checklist pass (Triggers wave updates/win screens)
+        refreshAllBattleUi();
+        if (getContentPane() != null) {
+            getContentPane().repaint();
+        }
+    });
+
+    // Clear and drop UI button focus configurations
+    for (int i = 0; i < 3; i++) {
+        Character turnCharacter = battleMgr.getPlayerInSlot(i);
+        java.util.List<GuItem> nextSkills = (turnCharacter != null) ? turnCharacter.getAvailableSkills() : null;
+        for (int j = 0; j < 3; j++) {
+            if(j < 2){
+                String freshSkillName = nextSkills.get(j).getName();
+                playerSkill[i][j].setText(freshSkillName);
+                playerSkill[i][j].setBackground(Color.WHITE);
+                playerSkill[i][j].setForeground(Color.BLACK);
+            }
+
+            playerTarget[i][j].setVisible(false);
+            playerTarget[i][j].setBackground(Color.WHITE);
+            playerTarget[i][j].setForeground(Color.BLACK);
+        }
+    }
+
+    sequenceTimer.setRepeats(false);
+    sequenceTimer.start();
+}
         
         
         
     }//GEN-LAST:event_AttackButtonActionPerformed
            
-        public void updateCombatSprite(javax.swing.JLabel label, String position, String state) {
+public void updateCombatSprite(javax.swing.JLabel label, String position, String state) {
+// 1. If dead, make the sprite vanish instantly
+    if (state.equals("dead")) {
+        label.setIcon(null);
+        label.setText("");
+        return;
+    }
 
-             // If dead, make the sprite vanish instantly
-             if (state.equals("dead")) {
-                 label.setIcon(null);
-                 label.setText("");
-                 return;
-             }
+    // 2. ENEMY RANDOMIZATION & TRACKING INTERCEPT
+    String finalPosition = position; 
+    boolean isEnemy = false; 
+    
+    if (position.equalsIgnoreCase("e1") || position.equalsIgnoreCase("e2") || position.equalsIgnoreCase("e3")) {
+        isEnemy = true; 
+        int enemyIdx = position.equalsIgnoreCase("e1") ? 0 : position.equalsIgnoreCase("e2") ? 1 : 2;
+        
+        if (enemyAssignedSkins[enemyIdx].isEmpty()) {
+            String[] availableSkins = { "1stChar", "2ndChar", "3rdChar" };
+            java.util.Random rand = new java.util.Random();
+            enemyAssignedSkins[enemyIdx] = availableSkins[rand.nextInt(availableSkins.length)];
+            System.out.println(position + " randomly rolled skin: " + enemyAssignedSkins[enemyIdx]);
+        }
+        
+        finalPosition = enemyAssignedSkins[enemyIdx];
+    }
 
-             // Now it looks for files like "/p1Idle.png" or "/p1Casting.png"
-             String fullPath = "/" + position + ".png";
-             java.net.URL imgURL = getClass().getResource(fullPath);
+    // 3. Look for the asset file
+    String fullPath = "/" + finalPosition + state + ".png";
+    java.net.URL imgURL = getClass().getResource(fullPath);
 
-             if (imgURL != null) {
-                 ImageIcon originalIcon = new ImageIcon(imgURL);
-                 // Scale smoothly to your 100x100 bounds
-                 java.awt.Image scaledImage = originalIcon.getImage().getScaledInstance(
-                         ARENAICON_WIDTH, ARENAICON_HEIGHT, java.awt.Image.SCALE_SMOOTH
-                 );
-                 label.setIcon(new ImageIcon(scaledImage));
-                 label.setText(""); 
-             } else {
-                 System.out.println("Missing asset file: " + fullPath);
-                 label.setText(position + " [" + state + "]"); 
-             }
-         }
+    if (imgURL != null) {
+        // Load the full-sized image instantly into memory
+        ImageIcon originalIcon = new ImageIcon(imgURL);
+        java.awt.Image rawImage = originalIcon.getImage();
+        
+        int srcWidth = rawImage.getWidth(label);
+        int srcHeight = rawImage.getHeight(label);
+
+        java.awt.image.BufferedImage finalImage = new java.awt.image.BufferedImage(
+                ARENAICON_WIDTH, ARENAICON_HEIGHT, java.awt.image.BufferedImage.TYPE_INT_ARGB
+        );
+        
+        java.awt.Graphics2D g2d = finalImage.createGraphics();
+        
+
+        g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION, java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
+        // 4. COMBINED SCALE & FLIP ENGINE
+        if (isEnemy) {
+            g2d.drawImage(rawImage, 
+                    0, 0, ARENAICON_WIDTH, ARENAICON_HEIGHT, // Target canvas box
+                    srcWidth, 0, 0, srcHeight,               // Read source image backwards
+                    label
+            );
+        } else {
+            // Player: Draw normal scaling without flipping
+            g2d.drawImage(rawImage, 
+                    0, 0, ARENAICON_WIDTH, ARENAICON_HEIGHT, 
+                    0, 0, srcWidth, srcHeight, 
+                    label
+            );
+        }
+        g2d.dispose(); 
+        
+        label.setIcon(new ImageIcon(finalImage));
+        label.setText(""); 
+    } else {
+        System.out.println("Missing asset file: " + fullPath);
+        label.setText(position + " [" + state + "]"); 
+    }
+}
+        
 
     /**
      * Convienence wrapper to quickly initialize standard game start stances.
@@ -862,11 +1335,89 @@ public void playSkillAnimation(javax.swing.JLabel targetLabel, String gifName, i
 }
     
 
+public void updateHpBar(javax.swing.JProgressBar progressBar, Character character) {
+    if (progressBar == null) return;
+
+    // If the character is missing or dead, drop the bar to 0 cleanly
+    if (character == null || character.getHp() <= 0) {
+        progressBar.setMaximum(100);
+        progressBar.setValue(0);
+        progressBar.setString("DEAD");
+        progressBar.setForeground(java.awt.Color.GREEN);
+        return;
+    }
+
+    // 1. Synchronize the progress bar min/max scales to match the character stats
+    progressBar.setMinimum(0);
+    progressBar.setMaximum(character.getMaxHp());
+    progressBar.setValue(character.getHp());
+
+    // 2. Set the custom text display inside the bar
+    progressBar.setString(character.getHp() + " / " + character.getMaxHp() + " HP");
+
+}
 
 
+public void refreshAllBattleUi() {
+    // 1. Group your progress bars and visual labels into matching slot arrays
+    javax.swing.JProgressBar[] playerBars = { p1HpBar, p2HpBar, p3HpBar };
+    javax.swing.JLabel[] playerBases = { p1Base, p2Base, p3Base };
+    String[] playerIdentifiers = { "1stChar", "2ndChar", "3rdChar" };
 
+    javax.swing.JProgressBar[] enemyBars  = { e1HpBar, e2HpBar, e3HpBar };
+    javax.swing.JLabel[] enemyBases = { e1Base, e2Base, e3Base };
+    String[] enemyIdentifiers = { "e1", "e2", "e3" };
 
+    // Defeat condition check
+    if (battleMgr.getLivingPlayers().isEmpty()) {
+        endGameSequence(false); // Triggers the Lose screen state!
+        return;
+    }
 
+    // 2. ALWAYS Refresh Player data & check alive states
+    for (int i = 0; i < playerBars.length; i++) {
+        Character p = battleMgr.getPlayerInSlot(i);
+        updateHpBar(playerBars[i], p);
+        
+        if (p == null || p.getHp() <= 0) {
+            updateCombatSprite(playerBases[i], playerIdentifiers[i], "dead");
+        }
+    }
+
+    // 3. FIXED: ALWAYS Refresh Current Enemy UI status every turn, regardless of wave changes!
+    for (int i = 0; i < enemyBars.length; i++) {
+        Character e = battleMgr.getEnemyInSlot(i);
+        updateHpBar(enemyBars[i], e);
+
+        // If the enemy is dead, wipe their sprite off the field
+        if (e == null || e.getHp() <= 0) {
+            updateCombatSprite(enemyBases[i], enemyIdentifiers[i], "dead");
+        }
+    }
+
+    // 4. Run Wave Spawning Evaluation Logic
+    boolean waveChanged = battleMgr.checkAndSpawnNextWave();
+
+    if (waveChanged) {
+        if (battleMgr.isGameWon()) {
+            endGameSequence(true); // Triggers the Win screen state!
+        } else {
+            System.out.println("New wave generated. Resetting visual skins...");
+
+            // Clear skin history tags for the new spawn tier
+            for (int i = 0; i < enemyAssignedSkins.length; i++) {
+                enemyAssignedSkins[i] = ""; 
+            }
+
+            // Immediately force-initialize the newly spawned enemies' max properties
+            for (int i = 0; i < 3; i++) {
+                Character newEnemy = battleMgr.getEnemyInSlot(i);
+                updateHpBar(enemyBars[i], newEnemy);
+                updateCombatSprite(enemyBases[i], enemyIdentifiers[i], ""); 
+            }
+        }
+    }
+}
 
 public void setStaticCircleFace(javax.swing.JLabel label, String filename, int circleDiameter, int imageSize) {
     java.net.URL imgURL = getClass().getResource("/" + filename + ".png");
@@ -910,7 +1461,49 @@ public void setStaticCircleFace(javax.swing.JLabel label, String filename, int c
         System.out.println("Error rendering circle portrait: " + e.getMessage());
     }
 }
+/**
+ * Triggers the end-of-game sequence for wins and losses.
+ * Shows the result, waits 10 seconds, and smoothly routes back to settings.
+ */
+public void endGameSequence(boolean isWin) {
+    System.out.println("--- END GAME SEQUENCE TRIGGERED ---");
     
+    // 1. Assuming you have a label to display status updates on your arena UI
+    // (Replace 'statusLabel' with whatever your actual Jlabel variable name is)
+    if (isWin) {
+        gameStateLabel.setText("🎉 VICTORY! ALL WAVES CLEARED! 🎉");
+        gameStateLabel.setForeground(java.awt.Color.GREEN);
+    } else {
+        gameStateLabel.setText("💀 GAME OVER! YOUR PARTY WAS WIPED OUT! 💀");
+        gameStateLabel.setForeground(java.awt.Color.RED);
+    }
+    gameStateLabel.setVisible(true);
+
+    // 2. Create a 10-second (10000 ms) delay timer to route back
+    javax.swing.Timer returnTimer = new javax.swing.Timer(10000, e -> {
+        // Switch your state management string back to SETTINGS
+        currentScreen = "SETTINGS";
+        
+        // Hide your combat arena panels/elements so the settings screen components show up
+        MenuPanel.setVisible(false);
+        SettingsPanel.setVisible(true);
+        ArenaPanel.setVisible(false);
+        
+        // Reinitialize a fresh BattleManager context so the game resets cleanly
+        battleMgr = new BattleManager(); 
+        
+        // Force Java Swing to redraw the 9 settings layers instantly
+        revalidate();
+        repaint();
+        
+        System.out.println("Returned to Settings Panel and reset battle metrics.");
+    });
+    
+    returnTimer.setRepeats(false);
+    returnTimer.start();
+}
+
+
 private Character createCharacterFromPath(String heroName, String pathString) {
             switch(pathString.toLowerCase()) {
                 case "fire":   return new FirePath(heroName);
@@ -954,8 +1547,12 @@ private Character createCharacterFromPath(String heroName, String pathString) {
     private javax.swing.JPanel SettingsPanel;
     private javax.swing.JLabel TitleLabel;
     private javax.swing.JLabel e1Base;
+    private javax.swing.JProgressBar e1HpBar;
     private javax.swing.JLabel e2Base;
+    private javax.swing.JProgressBar e2HpBar;
     private javax.swing.JLabel e3Base;
+    private javax.swing.JProgressBar e3HpBar;
+    private javax.swing.JLabel gameStateLabel;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton2;
@@ -973,10 +1570,13 @@ private Character createCharacterFromPath(String heroName, String pathString) {
     private javax.swing.JLayeredPane jLayeredPane1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel p1Base;
+    private javax.swing.JProgressBar p1HpBar;
     private javax.swing.JLabel p1Icon;
     private javax.swing.JLabel p2Base;
+    private javax.swing.JProgressBar p2HpBar;
     private javax.swing.JLabel p2Icon;
     private javax.swing.JLabel p3Base;
+    private javax.swing.JProgressBar p3HpBar;
     private javax.swing.JLabel p3Icon;
     private javax.swing.JButton playButton;
     private javax.swing.JLabel player1Icon;

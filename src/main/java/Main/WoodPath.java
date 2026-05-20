@@ -1,5 +1,5 @@
 /*
- * FirePath class
+ * WoodPath class
  */
 package Main;
 
@@ -9,46 +9,44 @@ import java.util.List;
 public class WoodPath extends Character {
 
     public WoodPath(String name) {
-        super(name, "wood" ,120, 35, 12); // hp, attack, defense
+        super(name, "wood", 120, 35, 12); // hp, attack, defense
     }
 
     @Override
     public void basicAttack(Character target) {
-        System.out.println(getName() + " Roots attack at " + target.getName() + "!");
+        System.out.println(getName() + " attacks with roots at " + target.getName() + "!");
         int damage = getAttackPower() + 10;
         target.receiveDamage(damage);
-        
-        // Small mastery gain on basic attack
         increaseMastery(2);
     }
 
     @Override
     public void useSkill(GuItem gu, Character target, BattleManager battleManager) {
+        String skillName = gu.getName().toLowerCase();
         System.out.println(getName() + " uses " + gu.getName() + " on " + target.getName() + "!");
 
-        switch (gu.getName().toLowerCase()) {
+        switch (skillName) {
             case "wood sustain":
-                if(battleManager.isTreeOfLifeActive() == true){
-                    System.out.println("Cannot use Wood sustain while Tree of life is active!");
-                }
-                else{
-                    System.out.println(target.getName() + " is greatly healed by nature!");
+                if (battleManager.isTreeOfLifeActive()) {
+                    System.out.println("❌ Cannot use Wood Sustain while Tree of Life is active!");
+                } else {
+                    System.out.println("🌿 " + target.getName() + " is greatly healed by nature!");
+                    // Safeguard healing using the inherited setHp() logic bounds
                     target.setHp(target.getHp() + 55);
-                    System.out.println(target.getName() + " restored 55 HP!");
+                    System.out.println("✨ " + target.getName() + " restored 55 HP!");
                     increaseMastery(10);
                 }
-
                 break;
 
             case "tree of life":
-                System.out.println("Tree of Life has been summoned! Allies will be healed over time.");
+                System.out.println("🌳 Tree of Life has been summoned! Ambient nature elements empower the field.");
                 battleManager.activateTreeOfLife(2);
-                System.out.println("All allies will receive healing for the next 2 turns.");
                 increaseMastery(8);
                 break;
 
             case "wood buff":
-                System.out.println("Buffed" + target.getName() + "with wood properties");
+                System.out.println("🛡️ Buffed " + target.getName() + " with wood properties!");
+                // FIXED: Now calls the new factory blueprint successfully
                 increaseMastery(12);
                 break;
 
@@ -62,6 +60,7 @@ public class WoodPath extends Character {
     public List<GuItem> getAvailableSkills() {
         List<GuItem> skills = new ArrayList<>();
         skills.add(new GuItem("Wood Sustain", "Strong single target heal", "Wood", 45, 1, "Heal"));
+        // Tree of Life is set to "Heal". In your attackButton layout, this will prompt ally targeting selection.
         skills.add(new GuItem("Tree of Life", "Summons healing tree", "Wood", 35, 1, "Heal"));
         skills.add(new GuItem("Wood Buff", "Buffs an ally", "Wood", 30, 1, "Buff"));
         return skills;

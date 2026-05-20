@@ -14,7 +14,6 @@ public abstract class Character {
     private int maxMana;
     private String elementPath; // "fire", "water", "earth", etc.
 
-    // Updated constructor to require the element path string up front
     public Character(String name, String elementPath, int hp, int attackPower, int defensePower) {
         this.name = name;
         this.elementPath = elementPath.toLowerCase();
@@ -27,10 +26,7 @@ public abstract class Character {
         this.maxMana = 80;
     }
 
-    public String getElementPath() {
-        return this.elementPath;
-    }
-
+    public String getElementPath() { return this.elementPath; }
     public String getName() { return name; }
     public int getHp() { return hp; }
     public int getMaxHp() { return maxHp; }
@@ -57,14 +53,15 @@ public abstract class Character {
         this.mana = Math.max(0, this.mana - amount);
     }
 
-    // Abstract methods for Polymorphism
+    public java.util.List<StatusEffect> getStatusEffects() {
+        return this.activeEffects; 
+    }
+
     public abstract void basicAttack(Character target);
     public abstract void useSkill(GuItem gu, Character target, BattleManager battleManager);
     public abstract List<GuItem> getAvailableSkills();
 
-    public void defend() {
-        // Default defend logic
-    }
+    public void defend() {}
     
     private List<StatusEffect> activeEffects = new ArrayList<>();
 
@@ -73,37 +70,56 @@ public abstract class Character {
         System.out.println(getName() + " gained: " + effect.getName());
     }
 
-    public List<StatusEffect> getActiveEffects() {
-        return activeEffects;
-    }
+    public List<StatusEffect> getActiveEffects() { return activeEffects; }
 
     public void receiveDamage(int incomingDamage) {
-        int damage = incomingDamage;
+        int remainingDamage = incomingDamage;
 
-        for (StatusEffect eff : activeEffects) {
-            if (eff.getType().equals("EarthWall") && eff.getWallHp() > 0) {
-                int absorbed = Math.min(damage, eff.getWallHp());
-                eff.damageWall(absorbed);
-                System.out.println("Earth Wall absorbed " + absorbed + " damage!");
-                if (eff.getWallHp() <= 0) {
-                    System.out.println("Earth Wall has been destroyed!");
+        if (this.getStatusEffects() != null) {
+            // --- 1. CHECK FOR WATER SHIELD FLAT DAMAGE REDUCTION ---
+            for (StatusEffect effect : this.activeEffects) {
+                if (effect.getType().equalsIgnoreCase("WaterShield")) {
+                    int reduction = effect.getDamageReduction();
+                    remainingDamage = Math.max(0, remainingDamage - reduction);
+                    System.out.println("💧 Water Shield mitigates -" + reduction + " damage! New damage payload: " + remainingDamage);
                 }
-                return;
+                // --- 2. CHECK FOR WOOD BUFF DEFENSE BOOST ---
+                else if (effect.getType().equalsIgnoreCase("WoodBuff")) {
+                    int reduction = effect.getDefenseBonus();
+                    remainingDamage = Math.max(0, remainingDamage - reduction);
+                    System.out.println("🌿 Wood Buff bark hardens defenses! Mitigated -" + reduction + " damage.");
+                }
             }
+
+            // --- 3. CHECK FOR EARTH WALL ABSORPTION ---
+            for (int i = 0; i < this.activeEffects.size(); i++) {
+                StatusEffect effect = this.activeEffects.get(i);
+
+                if (effect.getType().equalsIgnoreCase("EarthWall")) {
+                    System.out.println("🧱 Earth Wall intercepts the attack! Current Wall HP: " + effect.getWallHp());
+
+                    if (effect.getWallHp() >= remainingDamage) {
+                        effect.damageWall(remainingDamage);
+                        remainingDamage = 0;
+                        System.out.println("🧱 The wall held! Remaining Wall HP: " + effect.getWallHp());
+                    } else {
+                        remainingDamage -= effect.getWallHp();
+                        effect.damageWall(effect.getWallHp()); 
+                        System.out.println("💥 The Earth Wall was shattered! " + remainingDamage + " damage bleeds through.");
+                    }
+                    break; 
+                }
+            }
+
+            this.activeEffects.removeIf(effect -> effect.getType().equalsIgnoreCase("EarthWall") && effect.getWallHp() <= 0);
         }
 
-        for (StatusEffect eff : activeEffects) {
-            if (eff.getDamageReduction() > 0) {
-                damage -= eff.getDamageReduction();
-            }
-            if (eff.getDefenseBonus() > 0) {
-                damage = (int)(damage * 0.75);
-            }
+        // --- 4. APPLY REMAINING DAMAGE ---
+        if (remainingDamage > 0) {
+            int finalHp = this.getHp() - remainingDamage;
+            this.setHp(Math.max(0, finalHp)); 
+            System.out.println(getName() + " takes " + remainingDamage + " actual damage. Current HP: " + this.getHp());
         }
-
-        damage = Math.max(0, damage);
-        setHp(getHp() - damage);
-        System.out.println(getName() + " took " + damage + " damage!");
     }
 
     public void processEndOfTurnEffects() {
@@ -116,11 +132,13 @@ public abstract class Character {
             }
 
             eff.decreaseDuration();
+            
 
-            if (eff.getDuration() <= 0 && !eff.getType().equals("EarthWall")) {
+            if (eff.getDuration() <= 0 && !eff.getType().equalsIgnoreCase("EarthWall")) {
                 System.out.println(eff.getName() + " has expired on " + getName());
                 activeEffects.remove(i);
             }
+            
         }
     }
 

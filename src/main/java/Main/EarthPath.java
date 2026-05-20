@@ -1,3 +1,6 @@
+/*
+ * EarthPath class
+ */
 package Main;
 
 import java.util.ArrayList;
@@ -18,24 +21,26 @@ public class EarthPath extends Character {
 
     @Override
     public void useSkill(GuItem gu, Character target, BattleManager battleManager) {
+        // Uniform lowercase comparison to prevent case-sensitivity runtime bugs
+        String skillName = gu.getName().toLowerCase();
         System.out.println(getName() + " uses " + gu.getName() + " on " + target.getName() + "!");
 
-        switch (gu.getName().toLowerCase()) {
-            case "earth wall":
-                System.out.println(getName() + "Wall of stone now protects" + target.getName());
-                target.addStatusEffect(StatusEffect.earthWall(80));
+        switch (skillName) {
+            case "earthwall":
+                System.out.println("🧱 A wall of stone now protects " + target.getName() + "!");
+                target.addStatusEffect(StatusEffect.earthwall(80));
                 increaseMastery(10);
                 break;
 
             case "earth throw":
                 int damage = (int) (getAttackPower() * 1.9);
                 target.receiveDamage(damage);
-                System.out.println("dealt" + damage + "to" + target.getName());
+                System.out.println(" Dealt " + damage + " damage to " + target.getName() + "!");
                 increaseMastery(8);
                 break;
 
             case "earth buff":
-                System.out.println(target.getName() + " is covered in strengthening stone (1 turn)!");
+                System.out.println("🛡️ " + target.getName() + " is covered in strengthening stone (2 turns)!");
                 target.addStatusEffect(StatusEffect.earthBuff());
                 increaseMastery(12);
                 break;
@@ -49,9 +54,10 @@ public class EarthPath extends Character {
     @Override
     public List<GuItem> getAvailableSkills() {
         List<GuItem> skills = new ArrayList<>();
-        skills.add(new GuItem("Earth Wall", "Creates a protective wall", "Earth", 20, 1, "Shield"));
-        skills.add(new GuItem("Earth Throw", "Throws a heavy rock", "Earth", 38, 1, "Damage"));
-        skills.add(new GuItem("Earth Buff", "Greatly increases defense", "Earth", 30, 1, "Buff"));
+        // Reused your exact matching effectTypes ("Shield", "Damage", "Buff")
+        skills.add(new GuItem("EarthThrow", "Throws a heavy rock", "Earth", 38, 1, "Damage"));
+        skills.add(new GuItem("EarthWall", "Creates a protective wall", "Earth", 20, 1, "Shield"));
+
         return skills;
     }
 }
